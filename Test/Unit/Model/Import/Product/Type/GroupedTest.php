@@ -28,9 +28,7 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class GroupedTest extends AbstractImportTestCase
 {
-    /**
-     * @var GroupedImportExport\Model\Import\Product\Type\Grouped
-     */
+    /** @var GroupedImportExport\Model\Import\Product\Type\Grouped */
     protected $grouped;
 
     /**
@@ -79,8 +77,6 @@ class GroupedTest extends AbstractImportTestCase
     protected $entityModel;
 
     /**
-     * @inheritdoc
-     *
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     protected function setUp(): void
@@ -183,19 +179,16 @@ class GroupedTest extends AbstractImportTestCase
      * @param array $skus
      * @param array $bunch
      *
-     * @return void
      * @dataProvider saveDataProvider
      */
-    public function testSaveData($skus, $bunch): void
+    public function testSaveData($skus, $bunch)
     {
         $this->entityModel->expects($this->once())->method('getNewSku')->willReturn($skus['newSku']);
         $this->entityModel->expects($this->once())->method('getOldSku')->willReturn($skus['oldSku']);
         $attributes = ['position' => ['id' => 0], 'qty' => ['id' => 0]];
         $this->links->expects($this->once())->method('getAttributes')->willReturn($attributes);
 
-        $this->entityModel
-            ->method('getNextBunch')
-            ->willReturnOnConsecutiveCalls([$bunch]);
+        $this->entityModel->expects($this->at(2))->method('getNextBunch')->willReturn([$bunch]);
         $this->entityModel->expects($this->any())->method('isRowAllowedToImport')->willReturn(true);
         $this->entityModel->expects($this->any())->method('getRowScope')->willReturn(Product::SCOPE_DEFAULT);
 
@@ -208,7 +201,7 @@ class GroupedTest extends AbstractImportTestCase
      *
      * @return array
      */
-    public function saveDataProvider(): array
+    public function saveDataProvider()
     {
         return [
             [
@@ -265,10 +258,8 @@ class GroupedTest extends AbstractImportTestCase
 
     /**
      * Test saveData() with store row scope
-     *
-     * @return void
      */
-    public function testSaveDataScopeStore(): void
+    public function testSaveDataScopeStore()
     {
         $this->entityModel->expects($this->once())->method('getNewSku')->willReturn(
             [
@@ -291,13 +282,10 @@ class GroupedTest extends AbstractImportTestCase
                 'product_type' => 'grouped'
             ]
         ];
+        $this->entityModel->expects($this->at(2))->method('getNextBunch')->willReturn($bunch);
         $this->entityModel->expects($this->any())->method('isRowAllowedToImport')->willReturn(true);
-        $this->entityModel
-            ->method('getNextBunch')
-            ->willReturnOnConsecutiveCalls($bunch);
-        $this->entityModel
-            ->method('getRowScope')
-            ->willReturnOnConsecutiveCalls(Product::SCOPE_DEFAULT, Product::SCOPE_STORE);
+        $this->entityModel->expects($this->at(4))->method('getRowScope')->willReturn(Product::SCOPE_DEFAULT);
+        $this->entityModel->expects($this->at(5))->method('getRowScope')->willReturn(Product::SCOPE_STORE);
 
         $this->links->expects($this->once())->method('saveLinksData');
         $this->grouped->saveData();
